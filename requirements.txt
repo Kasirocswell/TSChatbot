@@ -1,11 +1,12 @@
 langchain
+langchain-community
 openai
 sentence-transformers
 unstructured
 pdf2image
 libmagic
 streamlit
-selenium
 python-dotenv
 tiktoken
 faiss-cpu
+pymupdf

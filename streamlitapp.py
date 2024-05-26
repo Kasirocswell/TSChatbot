@@ -1,17 +1,17 @@
 import streamlit as st
-from langchain.document_loaders import UnstructuredURLLoader
+from langchain_community.document_loaders import UnstructuredURLLoader
 from langchain.text_splitter import CharacterTextSplitter
-from langchain.embeddings import OpenAIEmbeddings,HuggingFaceEmbeddings
+from langchain.embeddings import OpenAIEmbeddings, HuggingFaceEmbeddings
 from langchain.chat_models import ChatOpenAI
 from langchain.vectorstores import FAISS
 from langchain.llms import HuggingFaceHub
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from HTMLTemplate import css, user_template, bot_template
-from langchain_community.document_loaders import SeleniumURLLoader
 import os
 from dotenv import load_dotenv
-embedding_model_name=os.environ.get('EMBEDDING_MODEL_NAME')
+
+embedding_model_name = os.environ.get('EMBEDDING_MODEL_NAME')
 
 urls = [
     'https://teachstone.com/',
@@ -279,34 +279,261 @@ urls = [
     "https://store.teachstone.com/cda-family-child-care-training-bundle/",
     "https://store.teachstone.com/cda-spanish/",
     "https://store.teachstone.com/cda-training-class-observation-tool/"
+"https://info.teachstone.com/blog/topic/professional-development?utm_term=&utm_campaign=&utm_source=adwords&utm_medium=ppc&hsa_tgt=&hsa_grp=&hsa_src=x&hsa_net=adwords&hsa_mt=&hsa_ver=3&hsa_ad=&hsa_acc=9624027010&hsa_kw=&hsa_cam=20033757839&gad_source=1&gclid=CjwKCAjww_iwBhApEiwAuG6ccL_Y6HIsqoa2Lia-5pc6R-70BRp957r6-Db_BEvNDYgR_lymd1iRxRoC9ekQAvD_BwE",
+    "https://info.teachstone.com/blog/topic/announcements",
+    "https://info.teachstone.com/blog/topic/cda",
+    "https://info.teachstone.com/blog/topic/class-environment",
+    "https://info.teachstone.com/blog/topic/class-in-practice",
+    "https://info.teachstone.com/blog/topic/coach-tips",
+    "https://info.teachstone.com/blog/topic/covid-19",
+    "https://info.teachstone.com/blog/topic/diversity-equity-and-inclusion",
+    "https://info.teachstone.com/blog/topic/faqs",
+    "https://info.teachstone.com/blog/topic/for-parents",
+    "https://info.teachstone.com/blog/topic/head-start",
+    "https://info.teachstone.com/blog/topic/implementation",
+    "https://info.teachstone.com/blog/topic/infant-and-toddler",
+    "https://info.teachstone.com/blog/topic/interact",
+    "https://info.teachstone.com/blog/topic/just-for-fun",
+    "https://info.teachstone.com/blog/topic/k-12",
+    "https://info.teachstone.com/blog/topic/leadership-policy",
+    "https://info.teachstone.com/blog/topic/myteachstone",
+    "https://info.teachstone.com/blog/topic/observation-trainings",
+    "https://info.teachstone.com/blog/topic/podcast",
+    "https://info.teachstone.com/blog/topic/pre-k",
+    "https://info.teachstone.com/blog/topic/products-and-trainings",
+    "https://info.teachstone.com/blog/topic/professional-development",
+    "https://info.teachstone.com/blog/topic/reliability-and-certification",
+    "https://info.teachstone.com/blog/topic/research",
+    "https://info.teachstone.com/blog/topic/social-emotional-learning",
+    "https://info.teachstone.com/blog/topic/teacher-preparation",
+    "https://info.teachstone.com/blog/topic/teacher-spotlight",
+    "https://info.teachstone.com/blog/topic/teacher-tips",
+    "https://info.teachstone.com/blog/topic/professional-development/page/2",
+    "https://info.teachstone.com/blog/topic/professional-development/page/3",
+    "https://info.teachstone.com/blog/topic/professional-development/page/4",
+    "https://info.teachstone.com/blog/topic/professional-development/page/5",
+    "https://info.teachstone.com/blog/topic/announcements/page/2",
+    "https://info.teachstone.com/blog/topic/announcements/page/3",
+    "https://info.teachstone.com/blog/topic/announcements/page/4",
+    "https://info.teachstone.com/blog/topic/announcements/page/5",
+    "https://info.teachstone.com/blog/topic/class-in-practice/page/2",
+    "https://info.teachstone.com/blog/topic/class-in-practice/page/3",
+    "https://info.teachstone.com/blog/topic/class-in-practice/page/4",
+    "https://info.teachstone.com/blog/topic/class-in-practice/page/5",
+    "https://info.teachstone.com/blog/topic/coach-tips/page/2",
+    "https://info.teachstone.com/blog/topic/coach-tips/page/3",
+    "https://info.teachstone.com/blog/topic/coach-tips/page/4",
+    "https://info.teachstone.com/blog/topic/coach-tips/page/5",
+    "https://info.teachstone.com/blog/topic/covid-19/page/2",
+    "https://info.teachstone.com/blog/topic/covid-19/page/3",
+    "https://info.teachstone.com/blog/topic/covid-19/page/4",
+    "https://info.teachstone.com/blog/topic/diversity-equity-and-inclusion/page/2",
+    "https://info.teachstone.com/blog/topic/diversity-equity-and-inclusion/page/3",
+    "https://info.teachstone.com/blog/topic/diversity-equity-and-inclusion/page/4",
+    "https://info.teachstone.com/blog/topic/faqs/page/2",
+    "https://info.teachstone.com/blog/topic/faqs/page/3",
+    "https://info.teachstone.com/blog/topic/faqs/page/4",
+    "https://info.teachstone.com/blog/topic/faqs/page/5",
+    "https://info.teachstone.com/blog/topic/for-parents/page/2",
+    "https://info.teachstone.com/blog/topic/for-parents/page/3",
+    "https://info.teachstone.com/blog/topic/head-start/page/2",
+    "https://info.teachstone.com/blog/topic/head-start/page/3",
+    "https://info.teachstone.com/blog/topic/head-start/page/4",
+    "https://info.teachstone.com/blog/topic/head-start/page/5",
+    "https://info.teachstone.com/blog/topic/implementation/page/2",
+    "https://info.teachstone.com/blog/topic/implementation/page/3",
+    "https://info.teachstone.com/blog/topic/implementation/page/4",
+    "https://info.teachstone.com/blog/topic/implementation/page/5",
+    "https://info.teachstone.com/blog/topic/infant-and-toddler/page/2",
+    "https://info.teachstone.com/blog/topic/infant-and-toddler/page/3",
+    "https://info.teachstone.com/blog/topic/infant-and-toddler/page/4",
+    "https://info.teachstone.com/blog/topic/infant-and-toddler/page/5",
+    "https://info.teachstone.com/blog/topic/just-for-fun/page/2",
+    "https://info.teachstone.com/blog/topic/just-for-fun/page/3",
+    "https://info.teachstone.com/blog/topic/just-for-fun/page/4",
+    "https://info.teachstone.com/blog/topic/just-for-fun/page/5",
+    "https://info.teachstone.com/blog/topic/k-12/page/2",
+    "https://info.teachstone.com/blog/topic/k-12/page/3",
+    "https://info.teachstone.com/blog/topic/k-12/page/4",
+    "https://info.teachstone.com/blog/topic/k-12/page/5",
+    "https://info.teachstone.com/blog/topic/leadership-policy/page/2",
+    "https://info.teachstone.com/blog/topic/leadership-policy/page/3",
+    "https://info.teachstone.com/blog/topic/leadership-policy/page/4",
+    "https://info.teachstone.com/blog/topic/leadership-policy/page/5",
+    "https://info.teachstone.com/blog/topic/myteachstone/page/2",
+    "https://info.teachstone.com/blog/topic/myteachstone/page/3",
+    "https://info.teachstone.com/blog/topic/observation-trainings/page/2",
+    "https://info.teachstone.com/blog/topic/observation-trainings/page/3",
+    "https://info.teachstone.com/blog/topic/observation-trainings/page/4",
+    "https://info.teachstone.com/blog/topic/observation-trainings/page/5",
+    "https://info.teachstone.com/blog/topic/podcast/page/2",
+    "https://info.teachstone.com/blog/topic/podcast/page/3",
+    "https://info.teachstone.com/blog/topic/podcast/page/4",
+    "https://info.teachstone.com/blog/topic/podcast/page/5",
+    "https://info.teachstone.com/blog/topic/pre-k/page/2",
+    "https://info.teachstone.com/blog/topic/pre-k/page/3",
+    "https://info.teachstone.com/blog/topic/pre-k/page/4",
+    "https://info.teachstone.com/blog/topic/pre-k/page/5",
+    "https://info.teachstone.com/blog/topic/products-and-trainings/page/2",
+    "https://info.teachstone.com/blog/topic/products-and-trainings/page/3",
+    "https://info.teachstone.com/blog/topic/products-and-trainings/page/4",
+    "https://info.teachstone.com/blog/topic/products-and-trainings/page/5",
+    "https://info.teachstone.com/blog/topic/reliability-and-certification/page/2",
+    "https://info.teachstone.com/blog/topic/reliability-and-certification/page/3",
+    "https://info.teachstone.com/blog/topic/reliability-and-certification/page/4",
+    "https://info.teachstone.com/blog/topic/reliability-and-certification/page/5",
+    "https://info.teachstone.com/blog/topic/research/page/2",
+    "https://info.teachstone.com/blog/topic/research/page/3",
+    "https://info.teachstone.com/blog/topic/research/page/4",
+    "https://info.teachstone.com/blog/topic/research/page/5",
+    "https://info.teachstone.com/blog/topic/social-emotional-learning/page/2",
+    "https://info.teachstone.com/blog/topic/social-emotional-learning/page/3",
+    "https://info.teachstone.com/blog/topic/social-emotional-learning/page/4",
+    "https://info.teachstone.com/blog/topic/social-emotional-learning/page/4",
+    "https://info.teachstone.com/blog/topic/social-emotional-learning/page/2",
+    "https://info.teachstone.com/blog/topic/teacher-preparation/page/2",
+    "https://info.teachstone.com/blog/topic/teacher-tips/page/2",
+    "https://info.teachstone.com/blog/topic/teacher-tips/page/3",
+    "https://info.teachstone.com/blog/topic/teacher-tips/page/4",
+    "https://info.teachstone.com/blog/topic/professional-development/page/6",
+    "https://info.teachstone.com/blog/topic/professional-development/page/7",
+    "https://info.teachstone.com/blog/topic/announcements/page/6",
+    "https://info.teachstone.com/blog/topic/announcements/page/7",
+    "https://info.teachstone.com/blog/topic/class-in-practice/page/6",
+    "https://info.teachstone.com/blog/topic/class-in-practice/page/7",
+    "https://info.teachstone.com/blog/topic/coach-tips/page/6",
+    "https://info.teachstone.com/blog/topic/coach-tips/page/7",
+    "https://info.teachstone.com/blog/topic/faqs/page/6",
+    "https://info.teachstone.com/blog/topic/faqs/page/7",
+    "https://info.teachstone.com/blog/topic/implementation/page/6",
+    "https://info.teachstone.com/blog/topic/implementation/page/7",
+    "https://info.teachstone.com/blog/topic/infant-and-toddler/page/6",
+    "https://info.teachstone.com/blog/topic/infant-and-toddler/page/7",
+    "https://info.teachstone.com/blog/topic/just-for-fun/page/6",
+    "https://info.teachstone.com/blog/topic/just-for-fun/page/7",
+    "https://info.teachstone.com/blog/topic/k-12/page/6",
+    "https://info.teachstone.com/blog/topic/k-12/page/7",
+    "https://info.teachstone.com/blog/topic/leadership-policy/page/6",
+    "https://info.teachstone.com/blog/topic/leadership-policy/page/7",
+    "https://info.teachstone.com/blog/topic/observation-trainings/page/6",
+    "https://info.teachstone.com/blog/topic/observation-trainings/page/7",
+    "https://info.teachstone.com/blog/topic/pre-k/page/6",
+    "https://info.teachstone.com/blog/topic/pre-k/page/7",
+    "https://info.teachstone.com/blog/topic/products-and-trainings/page/6",
+    "https://info.teachstone.com/blog/topic/products-and-trainings/page/7",
+    "https://info.teachstone.com/blog/topic/reliability-and-certification/page/6",
+    "https://info.teachstone.com/blog/topic/reliability-and-certification/page/7",
+    "https://info.teachstone.com/blog/topic/research/page/6",
+    "https://info.teachstone.com/blog/topic/research/page/7",
+    "https://info.teachstone.com/blog/topic/teacher-tips/page/6",
+    "https://info.teachstone.com/blog/topic/teacher-tips/page/7",
+    "https://info.teachstone.com/blog/topic/professional-development/page/8",
+    "https://info.teachstone.com/blog/topic/professional-development/page/9",
+    "https://info.teachstone.com/blog/topic/announcements/page/8",
+    "https://info.teachstone.com/blog/topic/announcements/page/9",
+    "https://info.teachstone.com/blog/topic/class-in-practice/page/8",
+    "https://info.teachstone.com/blog/topic/class-in-practice/page/9",
+    "https://info.teachstone.com/blog/topic/coach-tips/page/8",
+    "https://info.teachstone.com/blog/topic/coach-tips/page/9",
+    "https://info.teachstone.com/blog/topic/faqs/page/8",
+    "https://info.teachstone.com/blog/topic/faqs/page/9",
+    "https://info.teachstone.com/blog/topic/implementation/page/8",
+    "https://info.teachstone.com/blog/topic/implementation/page/9",
+    "https://info.teachstone.com/blog/topic/infant-and-toddler/page/8",
+    "https://info.teachstone.com/blog/topic/k-12/page/8",
+    "https://info.teachstone.com/blog/topic/k-12/page/9",
+    "https://info.teachstone.com/blog/topic/leadership-policy/page/8",
+    "https://info.teachstone.com/blog/topic/leadership-policy/page/9",
+    "https://info.teachstone.com/blog/topic/observation-trainings/page/8",
+    "https://info.teachstone.com/blog/topic/observation-trainings/page/9",
+    "https://info.teachstone.com/blog/topic/pre-k/page/8",
+    "https://info.teachstone.com/blog/topic/pre-k/page/9",
+    "https://info.teachstone.com/blog/topic/products-and-trainings/page/8",
+    "https://info.teachstone.com/blog/topic/products-and-trainings/page/9",
+    "https://info.teachstone.com/blog/topic/research/page/8",
+    "https://info.teachstone.com/blog/topic/research/page/9",
+    "https://info.teachstone.com/blog/topic/teacher-tips/page/8",
+    "https://info.teachstone.com/blog/topic/teacher-tips/page/9",
+"https://info.teachstone.com/blog/topic/teacher-tips/page/9",
+    "https://info.teachstone.com/blog/topic/professional-development/page/10",
+    "https://info.teachstone.com/blog/topic/professional-development/page/11",
+    "https://info.teachstone.com/blog/topic/announcements/page/10",
+    "https://info.teachstone.com/blog/topic/class-in-practice/page/10",
+    "https://info.teachstone.com/blog/topic/class-in-practice/page/11",
+    "https://info.teachstone.com/blog/topic/coach-tips/page/10",
+    "https://info.teachstone.com/blog/topic/coach-tips/page/11",
+    "https://info.teachstone.com/blog/topic/faqs/page/10",
+    "https://info.teachstone.com/blog/topic/faqs/page/11",
+    "https://info.teachstone.com/blog/topic/implementation/page/10",
+    "https://info.teachstone.com/blog/topic/implementation/page/11",
+    "https://info.teachstone.com/blog/topic/leadership-policy/page/10",
+    "https://info.teachstone.com/blog/topic/leadership-policy/page/11",
+    "https://info.teachstone.com/blog/topic/pre-k/page/10",
+    "https://info.teachstone.com/blog/topic/pre-k/page/11",
+    "https://info.teachstone.com/blog/topic/products-and-trainings/page/10",
+    "https://info.teachstone.com/blog/topic/products-and-trainings/page/11",
+    "https://info.teachstone.com/blog/topic/research/page/10",
+    "https://info.teachstone.com/blog/topic/research/page/11",
+    "https://info.teachstone.com/blog/topic/teacher-tips/page/10",
+    "https://info.teachstone.com/blog/topic/teacher-tips/page/11",
+    "https://info.teachstone.com/blog/topic/professional-development/page/12",
+    "https://info.teachstone.com/blog/topic/class-in-practice/page/12",
+    "https://info.teachstone.com/blog/topic/class-in-practice/page/13",
+    "https://info.teachstone.com/blog/topic/coach-tips/page/12",
+    "https://info.teachstone.com/blog/topic/coach-tips/page/13",
+    "https://info.teachstone.com/blog/topic/leadership-policy/page/12",
+    "https://info.teachstone.com/blog/topic/leadership-policy/page/13",
+    "https://info.teachstone.com/blog/topic/pre-k/page/12",
+    "https://info.teachstone.com/blog/topic/pre-k/page/13",
+    "https://info.teachstone.com/blog/topic/products-and-trainings/page/12",
+    "https://info.teachstone.com/blog/topic/research/page/12",
+    "https://info.teachstone.com/blog/topic/research/page/13",
+    "https://info.teachstone.com/blog/topic/teacher-tips/page/12",
+    "https://info.teachstone.com/blog/topic/teacher-tips/page/13",
+    "https://info.teachstone.com/blog/topic/coach-tips/page/14",
+    "https://info.teachstone.com/blog/topic/coach-tips/page/15",
+    "https://info.teachstone.com/blog/topic/leadership-policy/page/14",
+    "https://info.teachstone.com/blog/topic/leadership-policy/page/15",
+    "https://info.teachstone.com/blog/topic/pre-k/page/14",
+    "https://info.teachstone.com/blog/topic/research/page/14",
+    "https://info.teachstone.com/blog/topic/research/page/15",
+    "https://info.teachstone.com/blog/topic/teacher-tips/page/14",
+    "https://info.teachstone.com/blog/topic/teacher-tips/page/15",
+    "https://info.teachstone.com/blog/topic/coach-tips/page/16",
+    "https://info.teachstone.com/blog/topic/coach-tips/page/17",
+    "https://info.teachstone.com/blog/topic/leadership-policy/page/16",
+    "https://info.teachstone.com/blog/topic/leadership-policy/page/17",
+    "https://info.teachstone.com/blog/topic/teacher-tips/page/16",
+    "https://info.teachstone.com/blog/topic/teacher-tips/page/17",
+    "https://info.teachstone.com/blog/topic/teacher-tips/page/18",
+    "https://info.teachstone.com/blog/topic/teacher-tips/page/19",
+    "https://info.teachstone.com/blog/topic/teacher-tips/page/20",
+    "https://info.teachstone.com/blog/topic/teacher-tips/page/21",
+    "https://info.teachstone.com/blog/topic/teacher-tips/page/22",
+    "https://info.teachstone.com/blog/topic/teacher-tips/page/23",
+    "https://info.teachstone.com/blog/topic/teacher-tips/page/24",
+    "https://info.teachstone.com/blog/topic/teacher-tips/page/25",
+    "https://info.teachstone.com/blog/topic/teacher-tips/page/26"
 ]
 
 def load_urls(urls):
-    loaders = SeleniumURLLoader(urls=urls)
+    loaders = UnstructuredURLLoader(urls=urls, ssl_verify=False)
     data = loaders.load()
     return data
 
 def get_text_chunks(data):
-    text_splitter=CharacterTextSplitter(separator="\n", chunk_size=1000, chunk_overlap=200, length_function=len)
-    text_chunks=text_splitter.split_documents(data)
+    text_splitter = CharacterTextSplitter(separator="\n", chunk_size=1000, chunk_overlap=200, length_function=len)
+    text_chunks = text_splitter.split_documents(data)
     return text_chunks
 
 def get_vector_store(text_chunks):
-    embeddings=OpenAIEmbeddings()
-    #embeddings=HuggingFaceEmbeddings(model_name=embedding_model_name)
-    vectorstore=FAISS.from_documents(text_chunks, embeddings)
-    return vectorstore
-
-@st.cache_resource(show_spinner=False)
-def process_data(urls):
-    data = load_urls(urls)
-    text_splitter = CharacterTextSplitter(separator="\n", chunk_size=1000, chunk_overlap=200, length_function=len)
-    text_chunks = text_splitter.split_documents(data)
-    embeddings = OpenAIEmbeddings()  # Consider using caching here as well if this is heavy
+    embeddings = OpenAIEmbeddings()
+    # embeddings = HuggingFaceEmbeddings(model_name=embedding_model_name)
     vectorstore = FAISS.from_documents(text_chunks, embeddings)
     return vectorstore
 
 def get_conversation_chain(vectorstore):
+    # llm = HuggingFaceHub(repo_id="google/flan-t5-xxl", model_kwargs={"temperature":0.5, "max_length":512})
     llm = ChatOpenAI()
     memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)
     conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=vectorstore.as_retriever(), memory=memory)
@@ -315,8 +542,8 @@ def get_conversation_chain(vectorstore):
 def handle_user_input(user_question):
     response = st.session_state.conversation({'question': user_question})
     st.session_state.chat_history = response['chat_history']
-    for i, message in enumerate(reversed(st.session_state.chat_history)):
-        if i % 2 != 0:
+    for i, message in enumerate(st.session_state.chat_history):
+        if i % 2 == 0:
             st.write(user_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
         else:
             st.write(bot_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
@@ -327,11 +554,13 @@ def main():
     st.write(css, unsafe_allow_html=True)
     st.header("Chatbot For Teachstone 💬")
 
+    # Initialize the session state for conversation and chat history if not already done
     if "conversation" not in st.session_state:
-        vectorstore = process_data(urls)  # This will cache and only run once per session
-        st.session_state.conversation = get_conversation_chain(vectorstore)
+        st.session_state.conversation = None
+    if "chat_history" not in st.session_state:
         st.session_state.chat_history = None
 
+    # Input for user questions
     user_question = st.text_input("Please ask a question")
     if user_question:
         handle_user_input(user_question)
@@ -344,6 +573,20 @@ def main():
         - Using openAI LLM
         - With LangChain
         ''')
+
+    # Use session_state to track if the initialization has occurred
+    if not st.session_state.get("first_render", False):
+        with st.spinner("Processing"):
+            # Load the Data
+            data = load_urls(urls)
+            # Split the Text into Chunks
+            text_chunks = get_text_chunks(data)
+            # Create a Vector Store
+            vectorstore = get_vector_store(text_chunks)
+            # Create a Conversation Chain
+            st.session_state.conversation = get_conversation_chain(vectorstore)
+            st.success("Completed")
+            st.session_state.first_render = True  # Set first_render to True after initializing
 
 if __name__ == '__main__':
     main()
