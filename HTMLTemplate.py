@@ -15,7 +15,7 @@ css = '''
 .chat-message .avatar img {
   max-width: 78px;
   max-height: 78px;
-  border-radius: 50%;
+  border-radius: 50%; /* Ensure the avatar is a perfect circle */
   object-fit: cover;
 }
 .chat-message .message {

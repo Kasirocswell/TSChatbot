@@ -15,7 +15,7 @@ COPY . .
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
-ENV OPENAI_API_KEY="Open AI API Key Here"
+ENV OPENAI_API_KEY="YOUR API KEY HERE"
 
 # Expose the port the app runs on
 EXPOSE 8501
